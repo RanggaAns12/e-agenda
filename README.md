@@ -1,58 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📑 E-Agenda - Sistem Informasi Manajemen Agenda & Arsip Surat
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+E-Agenda adalah aplikasi berbasis web yang dirancang untuk mendigitalisasi manajemen persuratan di lingkungan instansi pemerintah daerah. Sistem ini mempermudah pencatatan, pengarsipan, disposisi, dan klasifikasi surat masuk maupun surat keluar dengan antarmuka yang modern, responsif, dan elegan.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Dashboard Statistik Premium
+* **Statistik Volume Arsip Bulanan**: Grafik batang interaktif menggunakan **ApexCharts** untuk melacak volume surat masuk dan keluar secara langsung.
+* **Filter Tahun Tanpa Reload**: Pergantian tahun data pada grafik dimuat secara instan melalui AJAX/JSON tanpa me-reload halaman.
+* **Animasi "Air Naik" (Water Rising)**: Bar chart memiliki efek transisi dinamis seperti air pasang yang naik dari bawah ke atas secara bertahap (sequential delay) saat filter tahun diubah.
+* **Gradasi Air & Capsule Design**: Desain batang chart berbentuk kapsul membulat modern dengan perpaduan gradasi warna air premium (*Sky Blue* ke *Royal Blue*).
+* **Kartu Statistik Dinamis**: Dilengkapi dengan animasi penghitung angka (*number counter up*) untuk metrik Surat Masuk, Surat Keluar, Disposisi, dan Pengguna.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Manajemen Surat Masuk (Incoming Letters)
+* Pencatatan nomor agenda, nomor surat, instansi asal, tanggal terima, dan isi ringkas.
+* Pengunggahan file berkas lampiran (PDF / Gambar) beserta panel **Pratinjau Langsung (Live Preview)** di halaman detail tanpa perlu mengunduh terlebih dahulu.
+* Integrasi langsung untuk pembuatan disposisi bagi pimpinan.
 
-## Learning Laravel
+### 3. Manajemen Surat Keluar (Outgoing Letters)
+* Pencatatan surat keluar, nomor agenda, nomor surat, tanggal surat, tujuan surat, dan isi ringkas.
+* Upload berkas lampiran pendukung dengan fitur pratinjau dokumen.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 4. Lembar Disposisi Surat (Letter Disposition)
+* Penerusan perintah/instruksi dari pimpinan kepada petugas pelaksana terkait surat masuk tertentu.
+* Pelacakan status pengerjaan yang diberi label warna interaktif (*Proses*, *Diteruskan*, *Selesai*, *Ditolak*).
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 5. Klasifikasi Surat (Letter Classification)
+* Manajemen kode klasifikasi arsip surat standar administrasi negara (seperti Keuangan, Kepegawaian, Umum, Keamanan, dll) untuk mempermudah kategorisasi berkas.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### 6. Manajemen Pengguna & Hak Akses (Role-Based Access Control)
+* Pembatasan hak akses berbasis peran (*Role-Based Access Control* / RBAC):
+  * **Admin**: Memiliki akses penuh terhadap seluruh sistem termasuk menambah, mengubah, dan menghapus akun Petugas pada menu **Pengguna**.
+  * **Petugas**: Hanya memiliki akses untuk mengelola Surat Masuk, Surat Keluar, Klasifikasi, dan Disposisi. **Menu Pengguna disembunyikan sepenuhnya** dari sidebar dan dilindungi dari akses URL langsung.
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🛠️ Langkah-Langkah Penginstalan
+
+Ikuti instruksi berikut untuk menjalankan proyek E-Agenda di server lokal Anda:
+
+### 1. Kebutuhan Sistem
+* PHP >= 8.2
+* Composer >= 2.0
+* Node.js & npm
+* MySQL / MariaDB (atau database pilihan Anda)
+
+### 2. Persiapan Repositori & Dependensi
+Buka terminal di direktori proyek dan jalankan perintah berikut:
 
 ```bash
-composer require laravel/boost --dev
+# 1. Install dependensi PHP (Composer)
+composer install
 
-php artisan boost:install
+# 2. Install dependensi Javascript (NPM)
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 3. Konfigurasi Environment File
+Salin file `.env.example` menjadi `.env` dan sesuaikan koneksi database Anda:
 
-## Contributing
+```bash
+cp .env.example .env
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Buka file `.env` di text editor Anda, lalu sesuaikan bagian database:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=e_agenda
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Code of Conduct
+### 4. Migrasi & Pengisian Data Uji (Database Seeding)
+Buat database kosong bernama `e_agenda` di MySQL Anda, kemudian jalankan migrasi dan seeder untuk membuat tabel serta mengisinya dengan **50 data tiruan khas Indonesia** untuk setiap fitur:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# 1. Jalankan migrasi tabel
+php artisan migrate
 
-## Security Vulnerabilities
+# 2. Jalankan Seeder Database (Membuat data uji instansi Indonesia secara otomatis)
+php artisan db:seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 5. Kompilasi Aset Frontend
+Jalankan dev server vite untuk mengompilasi CSS (Tailwind) dan JavaScript secara real-time:
 
-## License
+```bash
+npm run dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 6. Jalankan Server Lokal Laravel
+Di jendela terminal terpisah, jalankan server pengembangan Laravel:
+
+```bash
+php artisan serve
+```
+Aplikasi sekarang dapat diakses melalui browser Anda di alamat: `http://127.0.0.1:8000`
+
+---
+
+## 🔑 Akun Login Uji Coba
+
+Gunakan kredensial berikut untuk masuk ke dalam aplikasi:
+
+| Peran (Role) | Username | Password | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| **Administrator** | `admin` | `password` | Akses penuh, dapat mengelola akun pengguna lain |
+| **Petugas** | `petugas1` | `password` | Hanya mengelola surat masuk, surat keluar, klasifikasi, & disposisi |
+
+---
+
+## 📁 Struktur Folder Utama Proyek
+* **`app/Http/Controllers/`**: Logika bisnis backend utama (termasuk `DashboardController` untuk data agregasi grafik).
+* **`app/Models/`**: Model Eloquent data database (`SuratMasuk`, `SuratKeluar`, `Disposisi`, `KlasifikasiSurat`, `User`).
+* **`database/seeders/`**: Script pengisi data otomatis untuk uji coba fungsionalitas sistem.
+* **`resources/views/`**: Halaman tampilan UI menggunakan Blade Template & Tailwind CSS.
+  * `/surat_masuk`: Halaman kelola surat masuk & live preview dokumen.
+  * `/surat_keluar`: Halaman kelola surat keluar.
+  * `/disposisi`: Halaman lembar disposisi pimpinan.
+  * `/klasifikasi`: Halaman kode klasifikasi persuratan.
+  * `/users`: Manajemen akun user/petugas (khusus Admin).
+  * `/layouts`: Komponen tata letak layout seperti sidebar & navbar.
