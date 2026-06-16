@@ -2,17 +2,27 @@
     <div class="flex w-full items-center justify-between px-4 py-3 shadow-2 md:px-6 2xl:px-11">
         
         <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Trigger Sidebar Mobile -->
             <button @click.stop="mobileSidebarOpen = !mobileSidebarOpen" 
                     class="block lg:hidden rounded-xl bg-white p-2.5 shadow-sm border border-gray-100 text-gray-500 hover:text-[#15803d] hover:shadow-md transition-all">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             
+            <!-- Trigger Sidebar Desktop -->
             <button @click.stop="desktopSidebarExpanded = !desktopSidebarExpanded" 
                     class="hidden lg:flex items-center justify-center rounded-xl bg-gray-50 p-2.5 shadow-sm border border-gray-100 text-gray-500 hover:bg-[#15803d] hover:text-white transition-all duration-300">
                 <svg class="h-6 w-6 transform transition-transform duration-300" :class="!desktopSidebarExpanded ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
+
+            <!-- Logo dan Teks E-Agenda di Mobile -->
+            <a href="{{ route('dashboard') }}" class="flex lg:hidden items-center gap-2 ml-1">
+                <img src="{{ asset('images/logo.webp') }}" alt="Logo" class="h-7 w-7 drop-shadow-sm flex-shrink-0">
+                <span class="text-base font-extrabold tracking-tight text-gray-800 leading-none">
+                    E-Agenda
+                </span>
+            </a>
         </div>
 
         <div class="hidden sm:flex flex-col items-center justify-center group">

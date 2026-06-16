@@ -1,5 +1,5 @@
 <aside :class="{ 'translate-x-0': mobileSidebarOpen, '-translate-x-full': !mobileSidebarOpen, 'lg:w-[280px]': desktopSidebarExpanded, 'lg:w-[88px]': !desktopSidebarExpanded }" 
-       class="absolute left-0 top-0 z-50 flex h-screen flex-col overflow-y-hidden bg-[#064e3b] text-white shadow-[10px_0_20px_rgba(0,0,0,0.1)] transition-all duration-300 ease-in-out lg:static lg:translate-x-0 relative">
+       class="fixed lg:static left-0 top-0 z-50 flex h-screen flex-col overflow-y-hidden bg-[#064e3b] text-white shadow-[10px_0_20px_rgba(0,0,0,0.1)] transition-all duration-300 ease-in-out lg:translate-x-0">
     
     <div class="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-[#115e3b] to-transparent opacity-50 pointer-events-none"></div>
 

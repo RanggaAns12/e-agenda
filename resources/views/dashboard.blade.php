@@ -149,8 +149,7 @@
 
     <!-- SCRIPT JS UNTUK ANIMASI & APEXCHARTS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            
+        function initDashboard() {
             // 1. Animasi Penghitung Angka
             const counters = document.querySelectorAll('.counter-value');
             const speed = 200; 
@@ -288,32 +287,47 @@
               },
             };
              
-            const chart = new ApexCharts(document.querySelector("#bar-chart"), chartConfig);
-            chart.render();
+            // Hindari inisialisasi ganda jika container sudah memiliki grafik
+            const chartContainer = document.querySelector("#bar-chart");
+            if (chartContainer) {
+                chartContainer.innerHTML = "";
+                const chart = new ApexCharts(chartContainer, chartConfig);
+                chart.render();
 
-            // 3. Listener Perubahan Tahun Tanpa Reload
-            document.getElementById('yearFilter').addEventListener('change', function () {
-                const year = this.value;
-                const newData = allYearsData[year] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
-                
-                // Reset data ke 0 secara instan tanpa animasi agar bisa naik lagi seperti air pasang
-                chart.updateSeries([
-                    {
-                        name: "Total Arsip",
-                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0]
-                    }
-                ], false);
-                
-                // Jalankan animasi naik secara bertahap setelah delay singkat
-                setTimeout(() => {
-                    chart.updateSeries([
-                        {
-                            name: "Total Arsip",
-                            data: newData
-                        }
-                    ], true);
-                }, 150);
-            });
-        });
+                // 3. Listener Perubahan Tahun Tanpa Reload
+                const filterEl = document.getElementById('yearFilter');
+                if (filterEl) {
+                    filterEl.addEventListener('change', function () {
+                        const year = this.value;
+                        const newData = allYearsData[year] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        
+                        // Reset data ke 0 secara instan tanpa animasi agar bisa naik lagi seperti air pasang
+                        chart.updateSeries([
+                            {
+                                name: "Total Arsip",
+                                data: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            }
+                        ], false);
+                        
+                        // Jalankan animasi naik secara bertahap setelah delay singkat
+                        setTimeout(() => {
+                            chart.updateSeries([
+                                {
+                                    name: "Total Arsip",
+                                    data: newData
+                                }
+                            ], true);
+                        }, 150);
+                    });
+                }
+            }
+        }
+
+        // Jalankan langsung jika DOM sudah siap
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            initDashboard();
+        } else {
+            document.addEventListener("DOMContentLoaded", initDashboard);
+        }
     </script>
 </x-app-layout>
