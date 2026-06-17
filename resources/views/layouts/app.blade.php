@@ -23,7 +23,7 @@
             
             @include('layouts.header')
 
-            <main class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 pb-24 lg:pb-10 w-full animate-fade-in-up">
+            <main class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 pb-24 lg:pb-10 w-full">
                 
                 @if(session('success'))
                     <div x-data="{ show: true }" x-show="show" x-transition.duration.500ms 
