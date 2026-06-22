@@ -15,18 +15,18 @@
             </div>
 
             <!-- Filter & Pencarian -->
-            <form method="GET" action="{{ route('surat-keluar.index') }}" class="flex flex-col md:flex-row gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+            <form id="filter-form" method="GET" action="{{ route('surat-keluar.index') }}" class="flex flex-col md:flex-row gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex-1 relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor agenda, no. surat, tujuan surat..." class="block w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:border-[#15803d] focus:ring focus:ring-green-200/50 transition-all placeholder:text-gray-400">
+                    <input type="text" id="search-input" name="search" value="{{ request('search') }}" placeholder="Cari nomor agenda, no. surat, tujuan surat..." class="block w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:border-[#15803d] focus:ring focus:ring-green-200/50 transition-all placeholder:text-gray-400">
                 </div>
                 
                 <div class="w-full md:w-64">
-                    <select name="kode_klasifikasi" onchange="this.form.submit()" class="block w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:border-[#15803d] focus:ring focus:ring-green-200/50 transition-all text-gray-600 bg-white">
+                    <select id="filter-select" name="kode_klasifikasi" class="block w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 focus:border-[#15803d] focus:ring focus:ring-green-200/50 transition-all text-gray-600 bg-white">
                         <option value="">Semua Klasifikasi</option>
                         @foreach($klasifikasi as $klas)
                             <option value="{{ $klas->kode_klasifikasi }}" {{ request('kode_klasifikasi') == $klas->kode_klasifikasi ? 'selected' : '' }}>
@@ -40,15 +40,17 @@
                     <button type="submit" class="flex-1 md:flex-none inline-flex items-center justify-center gap-2 rounded-xl bg-gray-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-gray-900 transition-all shadow-sm">
                         Cari
                     </button>
-                    @if(request('search') || request('kode_klasifikasi'))
-                        <a href="{{ route('surat-keluar.index') }}" class="inline-flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 px-4 py-2.5 text-sm font-bold text-gray-600 transition-all">
-                            Reset
-                        </a>
-                    @endif
+                    <div id="reset-button-container" class="inline-flex">
+                        @if(request('search') || request('kode_klasifikasi'))
+                            <a id="reset-link" href="{{ route('surat-keluar.index') }}" class="inline-flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 px-4 py-2.5 text-sm font-bold text-gray-600 transition-all">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </form>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div id="table-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto no-scrollbar">
                     <table class="w-full whitespace-nowrap text-left text-sm text-gray-600">
                         <thead class="bg-gray-50/80 text-gray-800 uppercase text-xs font-extrabold tracking-wider border-b border-gray-100">
@@ -184,4 +186,190 @@
         @endif
 
     </div>
+
+    <!-- Script AJAX untuk pencarian dan filter tanpa reload -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('filter-form');
+        const searchInput = document.getElementById('search-input');
+        const filterSelect = document.getElementById('filter-select');
+        const tableContainer = document.getElementById('table-container');
+        const resetButtonContainer = document.getElementById('reset-button-container');
+
+        if (!form || !searchInput || !filterSelect || !tableContainer) return;
+
+        let debounceTimer;
+
+        function updateResetButton() {
+            const hasSearch = searchInput.value.trim() !== '';
+            const hasSelect = filterSelect.value !== '';
+            
+            if (hasSearch || hasSelect) {
+                if (!document.getElementById('reset-link')) {
+                    const resetLink = document.createElement('a');
+                    resetLink.id = 'reset-link';
+                    resetLink.href = form.action;
+                    resetLink.className = 'inline-flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 px-4 py-2.5 text-sm font-bold text-gray-600 transition-all';
+                    resetLink.textContent = 'Reset';
+                    
+                    resetLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        searchInput.value = '';
+                        filterSelect.value = '';
+                        updateResetButton();
+                        fetchData();
+                    });
+                    
+                    resetButtonContainer.appendChild(resetLink);
+                }
+            } else {
+                const resetLink = document.getElementById('reset-link');
+                if (resetLink) {
+                    resetLink.remove();
+                }
+            }
+        }
+
+        function fetchData() {
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            
+            for (const [key, value] of [...params.entries()]) {
+                if (!value) {
+                    params.delete(key);
+                }
+            }
+            
+            const queryString = params.toString();
+            const url = form.action + (queryString ? '?' + queryString : '');
+
+            history.pushState(null, '', url);
+
+            tableContainer.style.opacity = '0.5';
+            tableContainer.style.transition = 'opacity 0.15s ease-in-out';
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTable = doc.getElementById('table-container');
+                if (newTable) {
+                    tableContainer.innerHTML = newTable.innerHTML;
+                    bindPagination();
+                }
+                tableContainer.style.opacity = '1';
+            })
+            .catch(error => {
+                console.error('Error fetching filtered data:', error);
+                tableContainer.style.opacity = '1';
+            });
+        }
+
+        function bindPagination() {
+            const paginationLinks = tableContainer.querySelectorAll('nav a, .pagination a');
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetUrl = this.href;
+                    
+                    const urlObj = new URL(targetUrl);
+                    const searchParam = urlObj.searchParams.get('search') || '';
+                    const classificationParam = urlObj.searchParams.get('kode_klasifikasi') || '';
+                    
+                    searchInput.value = searchParam;
+                    filterSelect.value = classificationParam;
+                    updateResetButton();
+
+                    history.pushState(null, '', targetUrl);
+                    
+                    tableContainer.style.opacity = '0.5';
+                    fetch(targetUrl, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newTable = doc.getElementById('table-container');
+                        if (newTable) {
+                            tableContainer.innerHTML = newTable.innerHTML;
+                            bindPagination();
+                        }
+                        tableContainer.style.opacity = '1';
+                        tableContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching paginated data:', error);
+                        tableContainer.style.opacity = '1';
+                    });
+                });
+            });
+        }
+
+        const initialResetLink = document.getElementById('reset-link');
+        if (initialResetLink) {
+            initialResetLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.value = '';
+                filterSelect.value = '';
+                updateResetButton();
+                fetchData();
+            });
+        }
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateResetButton();
+                fetchData();
+            }, 300);
+        });
+
+        filterSelect.addEventListener('change', function () {
+            updateResetButton();
+            fetchData();
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            clearTimeout(debounceTimer);
+            updateResetButton();
+            fetchData();
+        });
+
+        window.addEventListener('popstate', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            searchInput.value = urlParams.get('search') || '';
+            filterSelect.value = urlParams.get('kode_klasifikasi') || '';
+            updateResetButton();
+            
+            tableContainer.style.opacity = '0.5';
+            fetch(window.location.href, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTable = doc.getElementById('table-container');
+                if (newTable) {
+                    tableContainer.innerHTML = newTable.innerHTML;
+                    bindPagination();
+                }
+                tableContainer.style.opacity = '1';
+            });
+        });
+
+        bindPagination();
+    });
+    </script>
 </x-app-layout>
