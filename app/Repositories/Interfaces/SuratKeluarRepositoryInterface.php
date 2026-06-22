@@ -7,6 +7,9 @@ interface SuratKeluarRepositoryInterface
     // Mengambil semua data dengan paginasi, eager loading, dan filter
     public function getAllPaginated(int $perPage = 10, array $filters = []);
 
+    // Mengambil semua data tanpa paginasi (untuk kebutuhan ekspor)
+    public function getAllFiltered(array $filters = []);
+
     // Mengambil satu data berdasarkan ID
     public function getById(int $id);
 

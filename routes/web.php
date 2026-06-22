@@ -20,6 +20,22 @@ Route::middleware('auth')->group(function () {
     // Halaman Dashboard Utama
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Fitur Ekspor & Cetak
+    Route::get('klasifikasi/export/excel', [KlasifikasiSuratController::class, 'exportExcel'])->name('klasifikasi.export.excel');
+    Route::get('klasifikasi/export/pdf', [KlasifikasiSuratController::class, 'exportPdf'])->name('klasifikasi.export.pdf');
+
+    Route::get('surat-masuk/export/excel', [SuratMasukController::class, 'exportExcel'])->name('surat-masuk.export.excel');
+    Route::get('surat-masuk/export/pdf', [SuratMasukController::class, 'exportPdf'])->name('surat-masuk.export.pdf');
+    Route::get('surat-masuk/{id}/print', [SuratMasukController::class, 'printSingle'])->name('surat-masuk.print');
+
+    Route::get('surat-keluar/export/excel', [SuratKeluarController::class, 'exportExcel'])->name('surat-keluar.export.excel');
+    Route::get('surat-keluar/export/pdf', [SuratKeluarController::class, 'exportPdf'])->name('surat-keluar.export.pdf');
+    Route::get('surat-keluar/{id}/print', [SuratKeluarController::class, 'printSingle'])->name('surat-keluar.print');
+
+    Route::get('disposisi/export/excel', [DisposisiController::class, 'exportExcel'])->name('disposisi.export.excel');
+    Route::get('disposisi/export/pdf', [DisposisiController::class, 'exportPdf'])->name('disposisi.export.pdf');
+    Route::get('disposisi/{id}/print', [DisposisiController::class, 'printSingle'])->name('disposisi.print');
+
     // Fitur Utama E-Agenda (Bisa diakses Admin & Petugas)
     Route::resource('klasifikasi', KlasifikasiSuratController::class);
     Route::resource('surat-masuk', SuratMasukController::class);

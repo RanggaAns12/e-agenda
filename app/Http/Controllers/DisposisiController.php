@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Disposisi;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
+use App\Exports\DisposisiExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DisposisiController extends Controller
 {
@@ -71,5 +74,25 @@ class DisposisiController extends Controller
         $disposisi->delete();
 
         return redirect()->route('disposisi.index')->with('success', 'Data Disposisi berhasil dihapus.');
+    }
+
+    public function exportExcel()
+    {
+        $disposisi = Disposisi::with('suratMasuk')->latest()->get();
+        return Excel::download(new DisposisiExport($disposisi), 'laporan_disposisi_' . now()->format('Ymd_His') . '.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $disposisi = Disposisi::with('suratMasuk')->latest()->get();
+        $pdf = Pdf::loadView('exports.disposisi_pdf', compact('disposisi'))->setPaper('a4', 'landscape');
+        return $pdf->download('laporan_disposisi_' . now()->format('Ymd_His') . '.pdf');
+    }
+
+    public function printSingle(string $id)
+    {
+        $disposisi = Disposisi::with('suratMasuk')->findOrFail($id);
+        $pdf = Pdf::loadView('exports.disposisi_single', compact('disposisi'))->setPaper('a4', 'portrait');
+        return $pdf->stream('lembar_disposisi_' . ($disposisi->suratMasuk->no_agenda ?? $id) . '.pdf');
     }
 }

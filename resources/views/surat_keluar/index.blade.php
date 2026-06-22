@@ -8,10 +8,20 @@
                     <p class="text-sm text-gray-500 mt-1">Manajemen seluruh arsip surat keluar instansi.</p>
                 </div>
                 
-                <a href="{{ route('surat-keluar.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#15803d] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#115e3b] hover:shadow-md transition-all">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                    Tambah Surat Keluar
-                </a>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="exportData('excel')" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
+                        <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Excel
+                    </button>
+                    <button type="button" onclick="exportData('pdf')" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
+                        <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        PDF
+                    </button>
+                    <a href="{{ route('surat-keluar.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#15803d] px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#115e3b] hover:shadow-md transition-all">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        Tambah Surat Keluar
+                    </a>
+                </div>
             </div>
 
             <!-- Filter & Pencarian -->
@@ -368,6 +378,22 @@
                 tableContainer.style.opacity = '1';
             });
         });
+
+        window.exportData = function(type) {
+            const form = document.getElementById('filter-form');
+            if (form) {
+                const formData = new FormData(form);
+                const params = new URLSearchParams(formData);
+                for (const [key, value] of [...params.entries()]) {
+                    if (!value) {
+                        params.delete(key);
+                    }
+                }
+                const queryString = params.toString();
+                const baseUrl = type === 'excel' ? '{{ route("surat-keluar.export.excel") }}' : '{{ route("surat-keluar.export.pdf") }}';
+                window.location.href = baseUrl + (queryString ? '?' + queryString : '');
+            }
+        };
 
         bindPagination();
     });

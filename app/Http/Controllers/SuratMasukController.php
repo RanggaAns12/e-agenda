@@ -7,6 +7,9 @@ use App\Repositories\Interfaces\SuratMasukRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\SuratMasukExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratMasukController extends Controller
 {
@@ -121,5 +124,30 @@ class SuratMasukController extends Controller
         $this->suratMasukRepository->delete($id);
 
         return redirect()->route('surat-masuk.index')->with('success', 'Data Surat Masuk berhasil dihapus.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->only(['search', 'kode_klasifikasi']);
+        $suratMasuk = $this->suratMasukRepository->getAllFiltered($filters);
+        
+        return Excel::download(new SuratMasukExport($suratMasuk), 'laporan_surat_masuk_' . now()->format('Ymd_His') . '.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $filters = $request->only(['search', 'kode_klasifikasi']);
+        $suratMasuk = $this->suratMasukRepository->getAllFiltered($filters);
+        
+        $pdf = Pdf::loadView('exports.surat_masuk_pdf', compact('suratMasuk'))->setPaper('a4', 'landscape');
+        return $pdf->download('laporan_surat_masuk_' . now()->format('Ymd_His') . '.pdf');
+    }
+
+    public function printSingle(string $id)
+    {
+        $suratMasuk = $this->suratMasukRepository->getById($id);
+        
+        $pdf = Pdf::loadView('exports.surat_masuk_single', compact('suratMasuk'))->setPaper('a4', 'portrait');
+        return $pdf->stream('lembar_arsip_surat_masuk_' . $suratMasuk->no_agenda . '.pdf');
     }
 }

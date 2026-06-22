@@ -31,6 +31,27 @@ class SuratKeluarRepository implements SuratKeluarRepositoryInterface
             ->withQueryString();
     }
 
+    public function getAllFiltered(array $filters = [])
+    {
+        $query = SuratKeluar::with(['user', 'klasifikasi']);
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'like', "%{$search}%")
+                  ->orWhere('no_surat', 'like', "%{$search}%")
+                  ->orWhere('tujuan_surat', 'like', "%{$search}%")
+                  ->orWhere('isi_ringkas', 'like', "%{$search}%");
+            });
+        }
+
+        if (!empty($filters['kode_klasifikasi'])) {
+            $query->where('kode_klasifikasi', $filters['kode_klasifikasi']);
+        }
+
+        return $query->latest()->get();
+    }
+
     public function getById(int $id)
     {
         return SuratKeluar::with(['user', 'klasifikasi'])->findOrFail($id);

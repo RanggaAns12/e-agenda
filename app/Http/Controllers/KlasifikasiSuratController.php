@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\KlasifikasiSurat;
 use Illuminate\Http\Request;
+use App\Exports\KlasifikasiExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KlasifikasiSuratController extends Controller
 {
@@ -65,5 +68,18 @@ class KlasifikasiSuratController extends Controller
         $klasifikasi->delete();
 
         return redirect()->route('klasifikasi.index')->with('success', 'Klasifikasi Surat berhasil dihapus.');
+    }
+
+    public function exportExcel()
+    {
+        $klasifikasi = KlasifikasiSurat::orderBy('kode_klasifikasi', 'asc')->get();
+        return Excel::download(new KlasifikasiExport($klasifikasi), 'laporan_klasifikasi_surat_' . now()->format('Ymd_His') . '.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $klasifikasi = KlasifikasiSurat::orderBy('kode_klasifikasi', 'asc')->get();
+        $pdf = Pdf::loadView('exports.klasifikasi_pdf', compact('klasifikasi'))->setPaper('a4', 'portrait');
+        return $pdf->download('laporan_klasifikasi_surat_' . now()->format('Ymd_His') . '.pdf');
     }
 }
