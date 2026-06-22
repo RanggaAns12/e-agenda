@@ -18,12 +18,15 @@ class SuratMasukController extends Controller
         $this->suratMasukRepository = $suratMasukRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $filters = $request->only(['search', 'kode_klasifikasi']);
+
         // Mengambil data menggunakan Repository (anti-overload karena sudah dipaginasi)
-        $suratMasuk = $this->suratMasukRepository->getAllPaginated(10);
+        $suratMasuk = $this->suratMasukRepository->getAllPaginated(10, $filters);
+        $klasifikasi = KlasifikasiSurat::all();
         
-        return view('surat_masuk.index', compact('suratMasuk'));
+        return view('surat_masuk.index', compact('suratMasuk', 'klasifikasi'));
     }
 
     public function create()

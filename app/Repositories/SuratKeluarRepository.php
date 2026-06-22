@@ -7,12 +7,28 @@ use App\Repositories\Interfaces\SuratKeluarRepositoryInterface;
 
 class SuratKeluarRepository implements SuratKeluarRepositoryInterface
 {
-    public function getAllPaginated(int $perPage = 10)
+    public function getAllPaginated(int $perPage = 10, array $filters = [])
     {
+        $query = SuratKeluar::with(['user', 'klasifikasi']);
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function($q) use ($search) {
+                $q->where('no_agenda', 'like', "%{$search}%")
+                  ->orWhere('no_surat', 'like', "%{$search}%")
+                  ->orWhere('tujuan_surat', 'like', "%{$search}%")
+                  ->orWhere('isi_ringkas', 'like', "%{$search}%");
+            });
+        }
+
+        if (!empty($filters['kode_klasifikasi'])) {
+            $query->where('kode_klasifikasi', $filters['kode_klasifikasi']);
+        }
+
         // Memanggil relasi user dan klasifikasi sekaligus untuk mencegah overload
-        return SuratKeluar::with(['user', 'klasifikasi'])
-            ->latest()
-            ->paginate($perPage);
+        return $query->latest()
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function getById(int $id)

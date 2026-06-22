@@ -4,8 +4,8 @@ namespace App\Repositories\Interfaces;
 
 interface SuratMasukRepositoryInterface
 {
-    // Mengambil semua data dengan paginasi dan relasi (Eager Loading)
-    public function getAllPaginated(int $perPage = 10);
+    // Mengambil semua data dengan paginasi, relasi (Eager Loading), dan filter
+    public function getAllPaginated(int $perPage = 10, array $filters = []);
 
     // Mengambil satu data berdasarkan ID beserta relasinya
     public function getById(int $id);

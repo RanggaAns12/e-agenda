@@ -17,11 +17,14 @@ class SuratKeluarController extends Controller
         $this->suratKeluarRepository = $suratKeluarRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $suratKeluar = $this->suratKeluarRepository->getAllPaginated(10);
+        $filters = $request->only(['search', 'kode_klasifikasi']);
+
+        $suratKeluar = $this->suratKeluarRepository->getAllPaginated(10, $filters);
+        $klasifikasi = KlasifikasiSurat::all();
         
-        return view('surat_keluar.index', compact('suratKeluar'));
+        return view('surat_keluar.index', compact('suratKeluar', 'klasifikasi'));
     }
 
     public function create()
